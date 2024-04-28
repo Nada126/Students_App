@@ -165,24 +165,45 @@ class _EditPageState extends State<edit_page> {
                   onTap: () {
                     _showImageSourceDialog(context);
                   },
-                  child: Container(
-                    width: 160,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 160,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 2,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage: _imageFile != null
+                              ? FileImage(_imageFile!)
+                              : null,
+                          child: _imageFile == null
+                              ? const Icon(Icons.person, size: 80)
+                              : null,
+                        ),
                       ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 80,
-                      backgroundImage:
-                          _imageFile != null ? FileImage(_imageFile!) : null,
-                      child: _imageFile == null
-                          ? const Icon(Icons.person, size: 80)
-                          : null,
-                    ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              _showImageSourceDialog(context);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -295,7 +316,6 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-
   late TextEditingController _passwordController;
   late TextEditingController _newPasswordController;
   late TextEditingController _confirmPasswordController;
@@ -337,19 +357,33 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       return;
     }
 
+    final String newPassword = _newPasswordController.text;
+    final String confirmPassword = _confirmPasswordController.text;
+
+    if (newPassword != confirmPassword) {
+      // New password and confirm password do not match
+      // Display an error message and return without saving changes
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match.'),
+        ),
+      );
+      return;
+    }
+
     // Proceed with saving changes since the current password is correct
     final Database db = await _getDatabase();
 
     // Update password in local database
     await db.update(
       'user_data',
-      {'password': _newPasswordController.text},
+      {'password': newPassword},
       where: 'email = ?',
       whereArgs: [userEmail],
     );
 
     // Update password in SharedPreferences
-    prefs.setString('user_password', _newPasswordController.text);
+    prefs.setString('user_password', newPassword);
 
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -443,6 +477,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   },
                 ),
               ),
+              validator: (value) {
+                if (value != _newPasswordController.text) {
+                  return 'Passwords do not match';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -454,5 +494,4 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       ),
     );
   }
-
 }
