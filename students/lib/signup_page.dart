@@ -71,19 +71,19 @@ class _SignUpPageState extends State<signup_page> {
     }
   }
 
-  Future<String> _saveImageFile() async {
-    final String directoryPath = await _getImagesDirectoryPath();
-    final String filePath = '$directoryPath/user_image.png';
-    await _imageFile!.copy(filePath);
-    return filePath;
-  }
-
   Future<String> _getImagesDirectoryPath() async {
     final Directory directory = await getApplicationDocumentsDirectory();
     final String imagesDirectoryPath = '${directory.path}/images';
     final Directory imagesDirectory =
         await Directory(imagesDirectoryPath).create(recursive: true);
     return imagesDirectory.path;
+  }
+
+  Future<String> _saveImageFile() async {
+    final String directoryPath = await _getImagesDirectoryPath();
+    final String filePath = '$directoryPath/user_image.png';
+    await _imageFile!.copy(filePath);
+    return filePath;
   }
 
   Future<void> _submitForm() async {
@@ -106,7 +106,7 @@ class _SignUpPageState extends State<signup_page> {
           studentId: _studentIdController.text,
           level: _level ?? '',
           password: _passwordController.text,
-          imagePath: '', // Initialize with an empty string
+          imagePath: '',
         );
         await _saveUserDataLocally(userData);
         await _saveUserDataToSharedPreferences(userData);
@@ -130,17 +130,17 @@ class _SignUpPageState extends State<signup_page> {
     return users.isNotEmpty;
   }
 
+  // Future<void> _getImage(ImageSource source) async {
+  //   final pickedFile = await ImagePicker().pickImage(source: source);
+
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _imageFile = File(pickedFile.path);
+  //     });
+  //   }
+  // }
+
   bool _isPasswordVisible = false;
-
-  Future<void> _getImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +218,7 @@ class _SignUpPageState extends State<signup_page> {
                   controller: _studentIdController,
                   decoration: const InputDecoration(
                     labelText: 'Student ID',
-                    hintText: 'student ID',
+                    hintText: '202011',
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {

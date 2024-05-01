@@ -57,12 +57,17 @@ class _EditPageState extends State<edit_page> {
     final Database db = await _getDatabase();
 
     // Save changes to local database
+    final Map<String, dynamic> userDataUpdates = {
+      'name': _nameController.text,
+      'level': _levelController.text,
+    };
+    if (_imageFile != null) {
+      final String imagePath = await _saveImageFile(_userEmail);
+      userDataUpdates['imagePath'] = imagePath;
+    }
     await db.update(
       'user_data',
-      {
-        'name': _nameController.text,
-        'level': _levelController.text,
-      },
+      userDataUpdates,
       where: 'email = ?',
       whereArgs: [_userEmail],
     );
@@ -77,6 +82,14 @@ class _EditPageState extends State<edit_page> {
       prefs.setString('user_image', imagePath);
     }
 
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Profile updated successfully.'),
+      ),
+    );
+
+    // Navigate back to the profile page
     Navigator.pop(context);
   }
 

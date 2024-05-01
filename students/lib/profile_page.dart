@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_null_comparison, camel_case_types, use_super_parameters, library_private_types_in_public_api
+// ignore_for_file: unnecessary_null_comparison, camel_case_types, use_super_parameters, library_private_types_in_public_api, unused_local_variable, unused_element
 
 import 'dart:io';
 
@@ -38,7 +38,16 @@ class _ProfilePageState extends State<profile_page> {
       _studentId = userData['studentId'] ?? '';
       _userLevel = userData['level'] ?? '';
     });
-    _loadImage();
+    await _loadImage(); // Ensure that the image is loaded from the database
+  }
+
+  Future<void> _loadImage() async {
+    final String? imagePath = await _getUserImagePathFromDatabase(_userEmail);
+    if (imagePath != null) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
+    }
   }
 
   Future<Map<String, dynamic>> _getUserDataFromDatabase(String email) async {
@@ -64,14 +73,27 @@ class _ProfilePageState extends State<profile_page> {
     return directory.path;
   }
 
-  Future<void> _loadImage() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? imagePath = prefs.getString('user_image');
-    if (imagePath != null) {
-      setState(() {
-        _imageFile = File(imagePath);
-      });
+
+
+  Future<String?> _getUserImagePathFromDatabase(String email) async {
+    final db = await _getDatabase();
+    final List<Map<String, dynamic>> users = await db.query(
+      'user_data',
+      columns: ['imagePath'],
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    if (users.isNotEmpty) {
+      return users.last['imagePath'] as String?;
+    } else {
+      return null;
     }
+  }
+
+  Future<String?> _getImagePathFromDatabase() async {
+    final db = await _getDatabase();
+    final userData = await _getUserDataFromDatabase(_userEmail);
+    return userData['imagePath'];
   }
 
   @override
