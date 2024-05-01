@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_null_comparison, camel_case_types, use_super_parameters, library_private_types_in_public_api, unused_local_variable, unused_element
+// ignore_for_file: unnecessary_null_comparison, camel_case_types, use_super_parameters, library_private_types_in_public_api, unused_local_variable, unused_element, avoid_init_to_null
 
 import 'dart:io';
 
@@ -8,19 +8,21 @@ import 'package:sqflite/sqflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'bottom_app_bar.dart';
 
-class profile_page extends StatefulWidget {
-  const profile_page({Key? key}) : super(key: key);
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<profile_page> {
+class _ProfilePageState extends State<ProfilePage> {
   late String _userName = ""; // Initialize with an empty string
   late String _userEmail = ""; // Initialize with an empty string
   late String _studentId = ""; // Initialize with an empty string
   late String _userLevel = ""; // Initialize with an empty string
-  late File _imageFile = File('assets/default_image.png');
+  // late File _imageFile = File('assets/default_image.png');
+  late File? _imageFile = null; // Declare _imageFile as nullable
+
 
   @override
   void initState() {
@@ -43,9 +45,13 @@ class _ProfilePageState extends State<profile_page> {
 
   Future<void> _loadImage() async {
     final String? imagePath = await _getUserImagePathFromDatabase(_userEmail);
-    if (imagePath != null) {
+    if (imagePath != null && File(imagePath).existsSync()) {
       setState(() {
         _imageFile = File(imagePath);
+      });
+    } else {
+      setState(() {
+        _imageFile = null; // Assign null to _imageFile
       });
     }
   }
@@ -72,8 +78,6 @@ class _ProfilePageState extends State<profile_page> {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
-
-
 
   Future<String?> _getUserImagePathFromDatabase(String email) async {
     final db = await _getDatabase();
@@ -131,7 +135,7 @@ class _ProfilePageState extends State<profile_page> {
                 child: CircleAvatar(
                   radius: 80,
                   backgroundImage:
-                      _imageFile != null ? FileImage(_imageFile) : null,
+                      _imageFile != null ? FileImage(_imageFile!) : null,
                   child: _imageFile == null
                       ? const Icon(Icons.person, size: 80)
                       : null,

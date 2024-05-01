@@ -8,14 +8,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
-class edit_page extends StatefulWidget {
-  const edit_page({super.key});
+class EditPage extends StatefulWidget {
+  const EditPage({super.key});
 
   @override
   _EditPageState createState() => _EditPageState();
 }
 
-class _EditPageState extends State<edit_page> {
+class _EditPageState extends State<EditPage> {
   late String _userName = "";
   late String _userEmail = "";
   late String _studentId = "";
@@ -145,6 +145,19 @@ class _EditPageState extends State<edit_page> {
       setState(() {
         _imageFile = destinationFile;
       });
+
+      // Update image file path in SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('user_image', destinationPath);
+
+      // Update image file path in local database
+      final Database db = await _getDatabase();
+      await db.update(
+        'user_data',
+        {'imagePath': destinationPath},
+        where: 'email = ?',
+        whereArgs: [_userEmail],
+      );
     }
   }
 

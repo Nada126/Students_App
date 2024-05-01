@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types, library_private_types_in_public_api, use_build_context_synchronously, unused_element
+// ignore_for_file: camel_case_types, library_private_types_in_public_api, use_build_context_synchronously, unused_element, unused_import
 
 import 'dart:io';
 
@@ -9,14 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'user_data.dart';
 
-class signup_page extends StatefulWidget {
-  const signup_page({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<signup_page> {
+class _SignUpPageState extends State<SignUp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _studentIdController = TextEditingController();

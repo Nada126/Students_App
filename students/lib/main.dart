@@ -9,7 +9,7 @@ import 'edit_page.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 import 'profile_page.dart';
-import 'signup_page.dart';
+import 'signup.dart';
 import 'user_data.dart';
 
 
@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const login_page(),
-        '/signup': (context) => const signup_page(),
-        '/main': (context) => const home_page(),
-        '/profile': (context) => const profile_page(),  
-        '/edit': (context) => const edit_page(),
+        '/': (context) => const LoginPage(),
+        '/signup': (context) => const SignUp(),
+        '/main': (context) => const HomePage(),
+        '/profile': (context) => const ProfilePage(),  
+        '/edit': (context) => const EditPage(),
       },
     );
   }

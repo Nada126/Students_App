@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';  
 import 'bottom_app_bar.dart';
-
-// ignore: camel_case_types
-class home_page extends StatelessWidget {
-  const home_page({super.key});
+ 
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +25,7 @@ class home_page extends StatelessWidget {
                 // Navigate to the login page
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const login_page()),
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
               child: const Text('Logout'),
